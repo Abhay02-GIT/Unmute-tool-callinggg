@@ -9,10 +9,10 @@ tmux new-session -d -s unmute -x 220 -y 50
 tmux rename-window -t unmute:0 LLM
 tmux send-keys -t unmute:0 "echo 'Using Groq API - no local LLM needed'" ENTER
 tmux new-window -t unmute -n STT
-# STT_ENGINE=nemotron (default): NVIDIA Nemotron streaming STT, better on Indian
-# English (nemotron_stt/). STT_ENGINE=kyutai: the original Kyutai STT. Both
-# serve the same protocol on port 8090, so nothing else changes.
-if [ "${STT_ENGINE:-nemotron}" = "kyutai" ]; then
+# STT_ENGINE=kyutai (default): the original Kyutai STT. STT_ENGINE=nemotron:
+# NVIDIA Nemotron streaming STT (nemotron_stt/), an opt-in trial for Indian
+# English with its own turn-taking. Both serve the same protocol on port 8090.
+if [ "${STT_ENGINE:-kyutai}" != "nemotron" ]; then
 tmux send-keys -t unmute:1 "unset PYTHONPATH; unset LD_LIBRARY_PATH; cd $REPO_DIR && source .env && export HUGGING_FACE_HUB_TOKEN && source $HOME/.cargo/env && cd dockerless && source .venv/bin/activate && export LD_LIBRARY_PATH=\$(python -c 'import sysconfig; print(sysconfig.get_config_var(\"LIBDIR\"))') && export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True && cd .. && moshi-server worker --config services/moshi-server/configs/stt.toml --port 8090" ENTER
 else
 tmux send-keys -t unmute:1 "unset LD_LIBRARY_PATH; cd $REPO_DIR && ./nemotron_stt/run.sh" ENTER
