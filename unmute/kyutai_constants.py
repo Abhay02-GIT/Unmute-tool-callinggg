@@ -16,8 +16,10 @@ KYUTAI_LLM_API_KEY = os.environ.get("KYUTAI_LLM_API_KEY")
 # Kyutai's streaming STT keeps doing turn-taking (when the caller stops, when
 # they talk over Kelly). At the end of each turn the turn's audio is also sent
 # to this OpenRouter transcription model, and its text replaces Kyutai's,
-# which struggles with Indian English. Empty STT_REFINE_MODEL turns it off.
-STT_REFINE_MODEL = os.environ.get("STT_REFINE_MODEL", "openai/whisper-large-v3-turbo").strip()
+# which struggles with Indian English. Off by default: each reply waits for it
+# (up to STT_REFINE_TIMEOUT_S). Opt in with e.g.
+# STT_REFINE_MODEL=openai/whisper-large-v3-turbo.
+STT_REFINE_MODEL = os.environ.get("STT_REFINE_MODEL", "").strip()
 STT_REFINE_URL = os.environ.get(
     "STT_REFINE_URL", "https://openrouter.ai/api/v1/audio/transcriptions"
 )
